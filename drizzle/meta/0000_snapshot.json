@@ -245,19 +245,6 @@
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
-        },
-        "content_analysis_result_content_id_content_id_fk": {
-          "name": "content_analysis_result_content_id_content_id_fk",
-          "tableFrom": "content_analysis_result",
-          "tableTo": "content",
-          "columnsFrom": [
-            "content_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -404,19 +391,6 @@
           "tableTo": "user",
           "columnsFrom": [
             "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "content_play_session_content_id_content_id_fk": {
-          "name": "content_play_session_content_id_content_id_fk",
-          "tableFrom": "content_play_session",
-          "tableTo": "content",
-          "columnsFrom": [
-            "content_id"
           ],
           "columnsTo": [
             "id"

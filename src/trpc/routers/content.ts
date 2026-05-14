@@ -20,12 +20,31 @@ import {
 export const contentRouter = router({
   list: publicProcedure.query(async ({ ctx }) => {
     const db = getDb(ctx.env.WE_ARE_HERE_DB)
-    return listPublishedContent(db)
+    const rows = await listPublishedContent(db)
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      thumbnailUrl: row.thumbnailUrl,
+      content: row.content,
+      isPublished: row.isPublished,
+      publishedAt: row.publishedAt,
+    }))
   }),
 
   adminList: protectedAdminProcedure.query(async ({ ctx }) => {
     const db = getDb(ctx.env.WE_ARE_HERE_DB)
-    return listAllContent(db)
+    const rows = await listAllContent(db)
+    console.log(rows)
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      thumbnailUrl: row.thumbnailUrl,
+      content: row.content,
+      isPublished: row.isPublished,
+      publishedAt: row.publishedAt,
+    }))
   }),
 
   adminGet: protectedAdminProcedure.input(contentGetInputSchema).query(async ({ ctx, input }) => {

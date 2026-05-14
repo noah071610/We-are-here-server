@@ -3,5 +3,7 @@ declare namespace Cloudflare {
   interface Env {
     /** Supabase Auth JWT(세션 access token) 서명 검증용 프로젝트 JWT secret */
     SUPABASE_JWT_SECRET?: string
+    /** Local Ollama endpoint for AI analysis generation. Defaults to http://localhost:11434 */
+    OLLAMA_BASE_URL?: string
   }
 }

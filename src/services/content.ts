@@ -1,12 +1,13 @@
-import { and, desc, eq } from "drizzle-orm"
+import { and, asc, eq } from "drizzle-orm"
 import type { getDb } from "../db"
 import { content } from "../db/schema"
+import { ContentData } from "../trpc/validation/content-data"
 
 type Db = ReturnType<typeof getDb>
 
 export async function listAllContent(db: Db) {
   return db.query.content.findMany({
-    orderBy: [desc(content.updatedAt), desc(content.createdAt)],
+    orderBy: [asc(content.updatedAt), asc(content.createdAt)],
   })
 }
 
@@ -17,7 +18,7 @@ export async function getContentById(db: Db, id: string) {
 export async function listPublishedContent(db: Db) {
   return db.query.content.findMany({
     where: eq(content.isPublished, true),
-    orderBy: [desc(content.publishedAt), desc(content.createdAt)],
+    orderBy: [asc(content.publishedAt), asc(content.createdAt)],
   })
 }
 
@@ -49,7 +50,7 @@ export async function createContent(
       title: input.title,
       description: input.description ?? null,
       thumbnailUrl: input.thumbnailUrl ?? null,
-      content: input.content,
+      content: input.content as ContentData,
       isPublished,
       publishedAt: publishedAt ?? null,
     })
@@ -89,7 +90,7 @@ export async function updateContent(
       ...(patch.title !== undefined ? { title: patch.title } : {}),
       ...(patch.description !== undefined ? { description: patch.description } : {}),
       ...(patch.thumbnailUrl !== undefined ? { thumbnailUrl: patch.thumbnailUrl } : {}),
-      ...(patch.content !== undefined ? { content: patch.content } : {}),
+      ...(patch.content !== undefined ? { content: patch.content as ContentData } : {}),
       ...(patch.isPublished !== undefined ? { isPublished: patch.isPublished } : {}),
       publishedAt,
       updatedAt: new Date(),

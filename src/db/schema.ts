@@ -1,4 +1,5 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import { sql } from "drizzle-orm"
+import { integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core"
 
 import type { ContentData } from "../trpc/validation/content-data"
 
@@ -179,6 +180,12 @@ export const analyticsEvent = sqliteTable("analytics_event", {
     .notNull(),
 })
 
+/** 커플·콘텐츠당 CONTENT_COMPLETED_BOTH 이벤트 1건 (동시 완료 레이스 방지). */
+export const analyticsEventCompletedBothUniqueIdx = uniqueIndex("analytics_event_completed_both_unique").on(
+  analyticsEvent.coupleId,
+  analyticsEvent.contentId,
+).where(sql`${analyticsEvent.eventType} = 'CONTENT_COMPLETED_BOTH'`)
+
 /**
  * 콘텐츠 플레이 1회(입장~이탈/완료) 단위 세션.
  */
@@ -191,9 +198,7 @@ export const contentPlaySession = sqliteTable("content_play_session", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  contentId: text("content_id")
-    .notNull()
-    .references(() => content.id, { onDelete: "cascade" }),
+  contentId: text("content_id").notNull(),
 
   /** in_progress | abandoned | completed */
   status: text("status", { enum: CONTENT_PLAY_SESSION_STATUS }).default(CONTENT_PLAY_SESSION_STATUS[0]).notNull(),
@@ -234,9 +239,7 @@ export const contentAnalysisResult = sqliteTable("content_analysis_result", {
   coupleId: text("couple_id")
     .notNull()
     .references(() => couple.id, { onDelete: "cascade" }),
-  contentId: text("content_id")
-    .notNull()
-    .references(() => content.id, { onDelete: "cascade" }),
+  contentId: text("content_id").notNull(),
 
   summary: text("summary"),
   result: text("result", { mode: "json" }).notNull(),

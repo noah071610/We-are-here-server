@@ -8,6 +8,13 @@
       "when": 1778594564960,
       "tag": "0000_right_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1778594600000,
+      "tag": "0001_analytics_completed_both_unique",
+      "breakpoints": true
     }
   ]
 }
