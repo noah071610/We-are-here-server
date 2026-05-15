@@ -99,20 +99,23 @@ export async function redeemInvitationByCode(db: Db, redeemerUserId: string, raw
   if (inviterCouple || redeemerCouple) return { ok: false as const, reason: "already_paired" }
 
   const coupleId = crypto.randomUUID()
-  await db.insert(couple).values({
-    id: coupleId,
-    memberOneUserId: invRow.inviterUserId,
-    memberTwoUserId: redeemerUserId,
-  })
-
-  await db
-    .update(invitation)
-    .set({
-      status: "accepted",
-      redeemedByUserId: redeemerUserId,
-      coupleId,
+  await db.transaction(async (tx) => {
+    await tx.insert(couple).values({
+      id: coupleId,
+      memberOneUserId: invRow.inviterUserId,
+      memberTwoUserId: redeemerUserId,
     })
-    .where(eq(invitation.id, invRow.id))
+
+    const deletedRows = await tx
+      .delete(invitation)
+      .where(eq(invitation.id, invRow.id))
+      .returning({ id: invitation.id })
+
+    // 커플 생성과 초대 코드 삭제를 한 트랜잭션으로 묶어 불일치 상태를 방지한다.
+    if (deletedRows.length === 0) {
+      throw new Error("invitation not found during redeem")
+    }
+  })
 
   return { ok: true as const, coupleId, invitationId: invRow.id }
 }
